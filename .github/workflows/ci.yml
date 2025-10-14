@@ -132,6 +132,13 @@ jobs:
               sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE bustracking TO apiuser;" || true
               sudo -u postgres psql -c "ALTER USER apiuser CREATEDB;" || true
               
+              # Grant schema permissions (required for PostgreSQL 15+)
+              echo "Granting schema permissions..."
+              sudo -u postgres psql -d bustracking -c "GRANT ALL ON SCHEMA public TO apiuser;" || true
+              sudo -u postgres psql -d bustracking -c "GRANT CREATE ON SCHEMA public TO apiuser;" || true
+              sudo -u postgres psql -d bustracking -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO apiuser;" || true
+              sudo -u postgres psql -d bustracking -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO apiuser;" || true
+              
               # Configure PostgreSQL for local connections
               echo "Configuring PostgreSQL..."
               if [ "$PKG_MANAGER" = "apt" ]; then
@@ -147,6 +154,12 @@ jobs:
               echo "✅ PostgreSQL setup completed"
             else
               echo "PostgreSQL already installed"
+              # Ensure proper permissions on existing installation
+              echo "Ensuring proper database permissions..."
+              sudo -u postgres psql -d bustracking -c "GRANT ALL ON SCHEMA public TO apiuser;" || true
+              sudo -u postgres psql -d bustracking -c "GRANT CREATE ON SCHEMA public TO apiuser;" || true
+              sudo -u postgres psql -d bustracking -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO apiuser;" || true
+              sudo -u postgres psql -d bustracking -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO apiuser;" || true
             fi
             
             # Install AWS CLI if not present
