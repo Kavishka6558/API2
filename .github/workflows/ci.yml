@@ -112,6 +112,43 @@ jobs:
               echo "Docker installed successfully"
             fi
             
+            # Install and setup PostgreSQL if not present
+            if ! command -v psql &> /dev/null; then
+              echo "🗄️ Installing PostgreSQL..."
+              if [ "$PKG_MANAGER" = "apt" ]; then
+                $INSTALL_CMD postgresql postgresql-contrib
+              else
+                $INSTALL_CMD postgresql postgresql-server postgresql-contrib
+                sudo postgresql-setup --initdb || true
+              fi
+              sudo systemctl start postgresql
+              sudo systemctl enable postgresql
+              echo "PostgreSQL service started"
+              
+              # Setup database and user
+              echo "Setting up database and user..."
+              sudo -u postgres createdb bustracking || true
+              sudo -u postgres psql -c "CREATE USER apiuser WITH PASSWORD 'securepassword123';" || true
+              sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE bustracking TO apiuser;" || true
+              sudo -u postgres psql -c "ALTER USER apiuser CREATEDB;" || true
+              
+              # Configure PostgreSQL for local connections
+              echo "Configuring PostgreSQL..."
+              if [ "$PKG_MANAGER" = "apt" ]; then
+                PG_VERSION=$(sudo -u postgres psql -t -c "SELECT version();" | grep -oE '[0-9]+' | head -1)
+                PG_CONF_DIR="/etc/postgresql/$PG_VERSION/main"
+                if [ -f "$PG_CONF_DIR/postgresql.conf" ]; then
+                  sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = 'localhost'/" $PG_CONF_DIR/postgresql.conf
+                  echo "host bustracking apiuser 127.0.0.1/32 md5" | sudo tee -a $PG_CONF_DIR/pg_hba.conf
+                fi
+              fi
+              
+              sudo systemctl restart postgresql
+              echo "✅ PostgreSQL setup completed"
+            else
+              echo "PostgreSQL already installed"
+            fi
+            
             # Install AWS CLI if not present
             if ! command -v aws &> /dev/null; then
               echo "Installing AWS CLI..."
@@ -162,14 +199,15 @@ jobs:
             echo "DATABASE_URL is set: $([ -n "${{ secrets.DATABASE_URL }}" ] && echo "YES" || echo "NO")"
             echo "JWT_SECRET is set: $([ -n "${{ secrets.JWT_SECRET }}" ] && echo "YES" || echo "NO")"
             
-            # Run new container with improved health checks
+            # Run new container with improved health checks and local database
             $DOCKER_CMD run -d \
               --name ntc-bus-tracking-api \
               --restart unless-stopped \
+              --network host \
               -p 3000:3000 \
               -e NODE_ENV=production \
               -e PORT=3000 \
-              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              -e DATABASE_URL="postgresql://apiuser:securepassword123@localhost:5432/bustracking" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e REDIS_URL="${{ secrets.REDIS_URL }}" \
               -e CORS_ORIGIN="${{ secrets.CORS_ORIGIN }}" \
