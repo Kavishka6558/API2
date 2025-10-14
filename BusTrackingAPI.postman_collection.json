@@ -1,0 +1,624 @@
+{
+  "info": {
+    "name": "Real-Time Bus Tracking API",
+    "description": "Postman collection for the Bus Tracking API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"commuter\",\n  \"password\": \"commuter123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "exec": [
+                    "if (pm.response.code === 200) {",
+                    "    const response = pm.response.json();",
+                    "    pm.collectionVariables.set('token', response.token);",
+                    "}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "name": "Register User (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"newuser\",\n  \"password\": \"password123\",\n  \"role\": \"commuter\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Routes",
+      "item": [
+        {
+          "name": "Get All Routes",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/routes?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["routes"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Route by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/routes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["routes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Route (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"KT\",\n  \"name\": \"Kandy to Trincomalee\",\n  \"origin\": \"Kandy\",\n  \"destination\": \"Trincomalee\",\n  \"stops\": [\n    {\"name\": \"Kandy\", \"lat\": 7.2906, \"lng\": 80.6337},\n    {\"name\": \"Trincomalee\", \"lat\": 8.5874, \"lng\": 81.2152}\n  ],\n  \"distanceKm\": 180,\n  \"estimatedDurationMin\": 240\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/routes",
+              "host": ["{{base_url}}"],
+              "path": ["routes"]
+            }
+          }
+        },
+        {
+          "name": "Update Route (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estimatedDurationMin\": 200\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/routes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["routes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Route (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/routes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["routes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "6"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Buses",
+      "item": [
+        {
+          "name": "Get All Buses",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/buses?routeId=&status=&page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["buses"],
+              "query": [
+                {
+                  "key": "routeId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Bus by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/buses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["buses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Bus Location",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 6.9271,\n  \"lng\": 79.8612,\n  \"timestamp\": \"2025-10-01T12:00:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/buses/:id/location",
+              "host": ["{{base_url}}"],
+              "path": ["buses", ":id", "location"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Bus (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"busId\": \"B026\",\n  \"registrationNo\": \"SLTB-016\",\n  \"operatorName\": \"Sri Lanka Transport Board\",\n  \"capacity\": 50,\n  \"routeId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/buses",
+              "host": ["{{base_url}}"],
+              "path": ["buses"]
+            }
+          }
+        },
+        {
+          "name": "Update Bus (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"maintenance\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/buses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["buses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Bus (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/buses/:id",
+              "host": ["{{base_url}}"],
+              "path": ["buses", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "26"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trips",
+      "item": [
+        {
+          "name": "Get All Trips",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trips?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["trips"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Trip by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trips/:id",
+              "host": ["{{base_url}}"],
+              "path": ["trips", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Trip (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tripId\": \"T003\",\n  \"routeId\": 1,\n  \"busId\": 1,\n  \"departureTime\": \"2025-10-02T14:00:00Z\",\n  \"arrivalTime\": \"2025-10-02T17:00:00Z\",\n  \"date\": \"2025-10-02\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/trips",
+              "host": ["{{base_url}}"],
+              "path": ["trips"]
+            }
+          }
+        },
+        {
+          "name": "Update Trip (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delayed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/trips/:id",
+              "host": ["{{base_url}}"],
+              "path": ["trips", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Trip (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/trips/:id",
+              "host": ["{{base_url}}"],
+              "path": ["trips", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tracking",
+      "item": [
+        {
+          "name": "Get Bus Location",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tracking/:busId",
+              "host": ["{{base_url}}"],
+              "path": ["tracking", ":busId"],
+              "variable": [
+                {
+                  "key": "busId",
+                  "value": "B001"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Route Locations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/tracking/route/:routeId",
+              "host": ["{{base_url}}"],
+              "path": ["tracking", "route", ":routeId"],
+              "variable": [
+                {
+                  "key": "routeId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Seed",
+      "item": [
+        {
+          "name": "Seed Database",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/seed",
+              "host": ["{{base_url}}"],
+              "path": ["seed"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

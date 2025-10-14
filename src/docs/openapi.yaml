@@ -1,0 +1,232 @@
+openapi: 3.0.0
+info:
+  title: Real-Time Bus Tracking API
+  version: 1.0.0
+  description: API for tracking inter-provincial buses in Sri Lanka
+
+servers:
+  - url: http://localhost:3000/api
+
+paths:
+  /routes:
+    get:
+      summary: Get all routes
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: Page number
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of items per page
+      responses:
+        '200':
+          description: List of routes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  routes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Route'
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+  /routes/{id}:
+    get:
+      summary: Get route by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Route details with trips
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  route:
+                    $ref: '#/components/schemas/Route'
+                  trips:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Trip'
+  /buses:
+    get:
+      summary: Get all buses
+      parameters:
+        - name: routeId
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of buses
+  /buses/{id}:
+    get:
+      summary: Get bus by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bus details
+  /buses/{id}/location:
+    post:
+      summary: Update bus location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lat:
+                  type: number
+                lng:
+                  type: number
+                timestamp:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Updated bus
+  /tracking/{busId}:
+    get:
+      summary: Get bus location
+      parameters:
+        - name: busId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bus location
+  /tracking/route/{routeId}:
+    get:
+      summary: Get locations for route
+      parameters:
+        - name: routeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of bus locations
+  /seed:
+    post:
+      summary: Seed database
+      responses:
+        '200':
+          description: Seeding successful
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: API status
+
+components:
+  schemas:
+    Route:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        stops:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              lat:
+                type: number
+              lng:
+                type: number
+        distanceKm:
+          type: number
+        estimatedDurationMin:
+          type: number
+    Bus:
+      type: object
+      properties:
+        busId:
+          type: string
+        registrationNo:
+          type: string
+        operatorName:
+          type: string
+        capacity:
+          type: number
+        routeId:
+          type: string
+        status:
+          type: string
+        currentLocation:
+          type: object
+          properties:
+            lat:
+              type: number
+            lng:
+              type: number
+            timestamp:
+              type: string
+              format: date-time
+    Trip:
+      type: object
+      properties:
+        tripId:
+          type: string
+        routeId:
+          type: string
+        busId:
+          type: string
+        departureTime:
+          type: string
+          format: date-time
+        arrivalTime:
+          type: string
+          format: date-time
+        date:
+          type: string
+          format: date

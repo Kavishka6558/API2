@@ -1,0 +1,109 @@
+{
+  "routes": [
+    {
+      "code": "CK",
+      "name": "Colombo to Kandy",
+      "origin": "Colombo",
+      "destination": "Kandy",
+      "stops": [
+        {"name": "Colombo", "lat": 6.9271, "lng": 79.8612},
+        {"name": "Kadawatha", "lat": 7.0017, "lng": 79.9497},
+        {"name": "Gampaha", "lat": 7.0914, "lng": 80.0103},
+        {"name": "Kegalle", "lat": 7.2529, "lng": 80.3464},
+        {"name": "Peradeniya", "lat": 7.2706, "lng": 80.5938},
+        {"name": "Kandy", "lat": 7.2906, "lng": 80.6337}
+      ],
+      "distanceKm": 115,
+      "estimatedDurationMin": 180
+    },
+    {
+      "code": "CJ",
+      "name": "Colombo to Jaffna",
+      "origin": "Colombo",
+      "destination": "Jaffna",
+      "stops": [
+        {"name": "Colombo", "lat": 6.9271, "lng": 79.8612},
+        {"name": "Kurunegala", "lat": 7.4863, "lng": 80.3647},
+        {"name": "Anuradhapura", "lat": 8.3114, "lng": 80.4037},
+        {"name": "Vavuniya", "lat": 8.7542, "lng": 80.4982},
+        {"name": "Jaffna", "lat": 9.6615, "lng": 80.0255}
+      ],
+      "distanceKm": 396,
+      "estimatedDurationMin": 480
+    },
+    {
+      "code": "CG",
+      "name": "Colombo to Galle",
+      "origin": "Colombo",
+      "destination": "Galle",
+      "stops": [
+        {"name": "Colombo", "lat": 6.9271, "lng": 79.8612},
+        {"name": "Kalutara", "lat": 6.5854, "lng": 79.9607},
+        {"name": "Bentota", "lat": 6.4255, "lng": 79.9958},
+        {"name": "Hikkaduwa", "lat": 6.1407, "lng": 80.1019},
+        {"name": "Galle", "lat": 6.0329, "lng": 80.2168}
+      ],
+      "distanceKm": 119,
+      "estimatedDurationMin": 150
+    },
+    {
+      "code": "KA",
+      "name": "Kandy to Anuradhapura",
+      "origin": "Kandy",
+      "destination": "Anuradhapura",
+      "stops": [
+        {"name": "Kandy", "lat": 7.2906, "lng": 80.6337},
+        {"name": "Matale", "lat": 7.4675, "lng": 80.6234},
+        {"name": "Dambulla", "lat": 7.8742, "lng": 80.6511},
+        {"name": "Anuradhapura", "lat": 8.3114, "lng": 80.4037}
+      ],
+      "distanceKm": 137,
+      "estimatedDurationMin": 180
+    },
+    {
+      "code": "GM",
+      "name": "Galle to Matara",
+      "origin": "Galle",
+      "destination": "Matara",
+      "stops": [
+        {"name": "Galle", "lat": 6.0329, "lng": 80.2168},
+        {"name": "Unawatuna", "lat": 6.0174, "lng": 80.2488},
+        {"name": "Weligama", "lat": 5.9750, "lng": 80.4297},
+        {"name": "Matara", "lat": 5.9549, "lng": 80.5550}
+      ],
+      "distanceKm": 42,
+      "estimatedDurationMin": 60
+    }
+  ],
+  "buses": [
+    {"busId": "B001", "registrationNo": "SLTB-001", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CK"},
+    {"busId": "B002", "registrationNo": "SLTB-002", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CK"},
+    {"busId": "B003", "registrationNo": "SLTB-003", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CK"},
+    {"busId": "B004", "registrationNo": "SLTB-004", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CK"},
+    {"busId": "B005", "registrationNo": "SLTB-005", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CK"},
+    {"busId": "B006", "registrationNo": "PVT-001", "operatorName": "Private Operator A", "capacity": 45, "routeCode": "CJ"},
+    {"busId": "B007", "registrationNo": "PVT-002", "operatorName": "Private Operator A", "capacity": 45, "routeCode": "CJ"},
+    {"busId": "B008", "registrationNo": "PVT-003", "operatorName": "Private Operator A", "capacity": 45, "routeCode": "CJ"},
+    {"busId": "B009", "registrationNo": "PVT-004", "operatorName": "Private Operator A", "capacity": 45, "routeCode": "CJ"},
+    {"busId": "B010", "registrationNo": "PVT-005", "operatorName": "Private Operator A", "capacity": 45, "routeCode": "CJ"},
+    {"busId": "B011", "registrationNo": "SLTB-006", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CG"},
+    {"busId": "B012", "registrationNo": "SLTB-007", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CG"},
+    {"busId": "B013", "registrationNo": "SLTB-008", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CG"},
+    {"busId": "B014", "registrationNo": "SLTB-009", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CG"},
+    {"busId": "B015", "registrationNo": "SLTB-010", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "CG"},
+    {"busId": "B016", "registrationNo": "PVT-006", "operatorName": "Private Operator B", "capacity": 45, "routeCode": "KA"},
+    {"busId": "B017", "registrationNo": "PVT-007", "operatorName": "Private Operator B", "capacity": 45, "routeCode": "KA"},
+    {"busId": "B018", "registrationNo": "PVT-008", "operatorName": "Private Operator B", "capacity": 45, "routeCode": "KA"},
+    {"busId": "B019", "registrationNo": "PVT-009", "operatorName": "Private Operator B", "capacity": 45, "routeCode": "KA"},
+    {"busId": "B020", "registrationNo": "PVT-010", "operatorName": "Private Operator B", "capacity": 45, "routeCode": "KA"},
+    {"busId": "B021", "registrationNo": "SLTB-011", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "GM"},
+    {"busId": "B022", "registrationNo": "SLTB-012", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "GM"},
+    {"busId": "B023", "registrationNo": "SLTB-013", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "GM"},
+    {"busId": "B024", "registrationNo": "SLTB-014", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "GM"},
+    {"busId": "B025", "registrationNo": "SLTB-015", "operatorName": "Sri Lanka Transport Board", "capacity": 50, "routeCode": "GM"}
+  ],
+  "trips": [
+    {"tripId": "T001", "routeCode": "CK", "busId": "B001", "departureTime": "2025-10-01T08:00:00Z", "arrivalTime": "2025-10-01T11:00:00Z", "date": "2025-10-01"},
+    {"tripId": "T002", "routeCode": "CK", "busId": "B001", "departureTime": "2025-10-01T16:00:00Z", "arrivalTime": "2025-10-01T19:00:00Z", "date": "2025-10-01"}
+  ]
+}

@@ -1,0 +1,28 @@
+
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.docker
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=bustracking
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
