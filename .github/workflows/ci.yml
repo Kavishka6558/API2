@@ -162,7 +162,7 @@ jobs:
             echo "DATABASE_URL is set: $([ -n "${{ secrets.DATABASE_URL }}" ] && echo "YES" || echo "NO")"
             echo "JWT_SECRET is set: $([ -n "${{ secrets.JWT_SECRET }}" ] && echo "YES" || echo "NO")"
             
-            # Run new container
+            # Run new container with improved health checks
             $DOCKER_CMD run -d \
               --name ntc-bus-tracking-api \
               --restart unless-stopped \
@@ -174,36 +174,49 @@ jobs:
               -e REDIS_URL="${{ secrets.REDIS_URL }}" \
               -e CORS_ORIGIN="${{ secrets.CORS_ORIGIN }}" \
               -e LOG_LEVEL="${{ secrets.LOG_LEVEL }}" \
+              --health-cmd="curl -f http://localhost:3000/health || exit 1" \
+              --health-interval=30s \
+              --health-timeout=10s \
+              --health-retries=3 \
               ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
               
             echo "Container started. Checking environment inside container..."
-            sleep 5
+            sleep 10
             $DOCKER_CMD exec ntc-bus-tracking-api printenv | grep -E "(NODE_ENV|DATABASE_URL|JWT_SECRET)" | sed 's/=.*/=***/' || echo "Could not check container environment"
             
-            # Wait for container to start
-            sleep 15
+            # Wait for container to start and become healthy
+            echo "Waiting for application to become healthy..."
+            sleep 20
             
-            # Health check
+            # Enhanced health check with better error reporting
             echo "Checking if application is running..."
-            for i in {1..10}; do
-              if curl -f http://localhost:3000/health 2>/dev/null; then
-                echo "Health check passed!"
+            for i in {1..15}; do
+              echo "Attempt $i/15: Testing health endpoint..."
+              
+              # Check container status
+              CONTAINER_STATUS=$($DOCKER_CMD ps --filter "name=ntc-bus-tracking-api" --format "{{.Status}}" || echo "not found")
+              echo "Container status: $CONTAINER_STATUS"
+              
+              # Test health endpoint
+              if curl -f -s http://localhost:3000/health; then
+                echo "✅ Health check passed!"
+                echo "Application is running successfully"
                 break
               else
-                echo "Attempt $i/10: Waiting for application to start..."
+                echo "Health check failed, waiting..."
+                if [ $i -eq 15 ]; then
+                  echo "❌ Health check failed after 15 attempts"
+                  echo "=== Container Logs ==="
+                  $DOCKER_CMD logs ntc-bus-tracking-api --tail 100
+                  echo "=== Container Status ==="
+                  $DOCKER_CMD ps -a | grep ntc-bus-tracking-api || echo "Container not found"
+                  echo "=== Container Health ==="
+                  $DOCKER_CMD inspect ntc-bus-tracking-api --format='{{.State.Health.Status}}' || echo "No health status"
+                  exit 1
+                fi
                 sleep 10
               fi
             done
-            
-            # Final health check
-            if ! curl -f http://localhost:3000/health 2>/dev/null; then
-              echo "Health check failed after 10 attempts"
-              echo "Container logs:"
-              $DOCKER_CMD logs ntc-bus-tracking-api --tail 50
-              echo "Container status:"
-              $DOCKER_CMD ps -a | grep ntc-bus-tracking-api || echo "Container not found"
-              exit 1
-            fi
             
             # Install and configure Nginx with SSL
             echo "🌐 Setting up Nginx with SSL..."
