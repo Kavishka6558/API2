@@ -142,16 +142,25 @@ const seedDatabase = async () => {
     await Trip.destroy({ where: {} });
     await Bus.destroy({ where: {} });
     await Route.destroy({ where: {} });
-    await User.destroy({ where: {} });
-
-    // Create users
-    console.log('👤 Creating users...');
-    const hashedOperator = await bcrypt.hash('operator123', 10);
-    const hashedCommuter = await bcrypt.hash('commuter123', 10);
-    await User.bulkCreate([
-      { username: 'operator', password: hashedOperator, role: 'bus_operator' },
-      { username: 'commuter', password: hashedCommuter, role: 'commuter' },
-    ]);
+    
+    // Check if users exist, only seed if no users
+    const userCount = await User.count();
+    if (userCount === 0) {
+      await User.destroy({ where: {} });
+      
+      // Create users
+      console.log('👤 Creating users...');
+      const hashedAdmin = await bcrypt.hash('admin123', 10);
+      const hashedOperator = await bcrypt.hash('operator123', 10);
+      const hashedCommuter = await bcrypt.hash('commuter123', 10);
+      await User.bulkCreate([
+        { username: 'admin', password: hashedAdmin, role: 'admin' },
+        { username: 'operator', password: hashedOperator, role: 'bus_operator' },
+        { username: 'commuter', password: hashedCommuter, role: 'commuter' },
+      ]);
+    } else {
+      console.log('👤 Users already exist, skipping user creation...');
+    }
 
     // Create routes
     console.log('🛣️  Creating routes...');
@@ -193,11 +202,12 @@ const seedDatabase = async () => {
     }
 
     console.log('🎉 Database seeding completed successfully!');
+    const userSummary = userCount === 0 ? '3 Users created (admin, operator, commuter)' : 'Users already exist (preserved)';
     console.log(`📊 Summary:
     - 5 Routes created
     - 25 Buses created (5 per route)
     - ${seedData.trips.length} Sample trips created
-    - 2 Users created (operator, commuter)`);
+    - ${userSummary}`);
 
   } catch (error) {
     console.error('❌ Seeding failed:', error);

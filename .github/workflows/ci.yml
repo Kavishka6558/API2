@@ -269,6 +269,15 @@ jobs:
               fi
             done
             
+            # Seed the database with initial data
+            echo "🌱 Seeding database with initial data..."
+            if curl -X POST http://localhost:3000/api/seed; then
+              echo "✅ Database seeded successfully!"
+            else
+              echo "❌ Database seeding failed"
+              exit 1
+            fi
+            
             # Install and configure Nginx with SSL
             echo "🌐 Setting up Nginx with SSL..."
             

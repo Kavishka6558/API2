@@ -5,9 +5,6 @@ import bcrypt from 'bcryptjs';
 
 export const seedDatabase = async (req, res) => {
   try {
-    if (process.env.NODE_ENV !== 'development') {
-      return res.status(403).json({ message: 'Seeding only allowed in development' });
-    }
 
     const seedData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'src', 'data', 'seed.json'), 'utf-8'));
 
@@ -15,15 +12,22 @@ export const seedDatabase = async (req, res) => {
     await Trip.destroy({ where: {} });
     await Bus.destroy({ where: {} });
     await Route.destroy({ where: {} });
-    await User.destroy({ where: {} });
-
-    // Seed users
-    const hashedOperator = await bcrypt.hash('operator123', 10);
-    const hashedCommuter = await bcrypt.hash('commuter123', 10);
-    await User.bulkCreate([
-      { username: 'operator', password: hashedOperator, role: 'bus_operator' },
-      { username: 'commuter', password: hashedCommuter, role: 'commuter' },
-    ]);
+    
+    // Check if users exist, only seed if no users
+    const userCount = await User.count();
+    if (userCount === 0) {
+      await User.destroy({ where: {} });
+      
+      // Seed users
+      const hashedAdmin = await bcrypt.hash('admin123', 10);
+      const hashedOperator = await bcrypt.hash('operator123', 10);
+      const hashedCommuter = await bcrypt.hash('commuter123', 10);
+      await User.bulkCreate([
+        { username: 'admin', password: hashedAdmin, role: 'admin' },
+        { username: 'operator', password: hashedOperator, role: 'bus_operator' },
+        { username: 'commuter', password: hashedCommuter, role: 'commuter' },
+      ]);
+    }
 
     // Insert routes
     const routes = await Route.bulkCreate(seedData.routes);
