@@ -144,14 +144,14 @@ const seedDatabase = async () => {
     await Route.destroy({ where: {} });
     await User.destroy({ where: {} });
 
-    // Create admin user
-    console.log('👤 Creating admin user...');
-    const hashedPassword = await bcrypt.hash('admin123', 10);
-    await User.create({
-      username: 'admin',
-      password: hashedPassword,
-      role: 'admin'
-    });
+    // Create users
+    console.log('👤 Creating users...');
+    const hashedOperator = await bcrypt.hash('operator123', 10);
+    const hashedCommuter = await bcrypt.hash('commuter123', 10);
+    await User.bulkCreate([
+      { username: 'operator', password: hashedOperator, role: 'bus_operator' },
+      { username: 'commuter', password: hashedCommuter, role: 'commuter' },
+    ]);
 
     // Create routes
     console.log('🛣️  Creating routes...');
@@ -197,7 +197,7 @@ const seedDatabase = async () => {
     - 5 Routes created
     - 25 Buses created (5 per route)
     - ${seedData.trips.length} Sample trips created
-    - 1 Admin user created (username: admin, password: admin123)`);
+    - 2 Users created (operator, commuter)`);
 
   } catch (error) {
     console.error('❌ Seeding failed:', error);

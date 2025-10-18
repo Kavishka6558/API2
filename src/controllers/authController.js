@@ -5,11 +5,11 @@ import { User } from '../models/index.js';
 export const register = async (req, res) => {
   const { username, password, role } = req.body;
 
-  // Check if user is authenticated and is admin, or if this is the first user (allow creating first admin)
-  const totalUsers = await User.count();
-  const isFirstUser = totalUsers === 0;
+  // Check if user is authenticated and is admin, or if this is the first admin (allow creating first admin)
+  const totalAdmins = await User.count({ where: { role: 'admin' } });
+  const isFirstAdmin = totalAdmins === 0;
 
-  if (!isFirstUser) {
+  if (!isFirstAdmin) {
     // For subsequent registrations, require admin authentication
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

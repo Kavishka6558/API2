@@ -18,11 +18,9 @@ export const seedDatabase = async (req, res) => {
     await User.destroy({ where: {} });
 
     // Seed users
-    const hashedAdmin = await bcrypt.hash('admin123', 10);
     const hashedOperator = await bcrypt.hash('operator123', 10);
     const hashedCommuter = await bcrypt.hash('commuter123', 10);
     await User.bulkCreate([
-      { username: 'admin', password: hashedAdmin, role: 'admin' },
       { username: 'operator', password: hashedOperator, role: 'bus_operator' },
       { username: 'commuter', password: hashedCommuter, role: 'commuter' },
     ]);
